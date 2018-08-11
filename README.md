@@ -14,7 +14,15 @@ For the demo, I picked out a "designer" and a "business analyst" from the class 
 background, and the analyst worked with the rest of the class to choose a character and change what the characters said. 
 (It was cool to see which characters and backgrounds each class chose).
 
+Here's what the app currently looks like:
+
 ![screenshot](/images/screenshot.png)
+
+However, you can easily change the image, the size of the characters, and what they say. Here's how it looked during the demo for one of the classes:
+
+![screenshot 2](/images/screenshot2.jpg)
+
+# Presentation
 
 There is an accompanying presentation I gave to the kids before the demo in the `presentation` folder (Keynote format).
 
