@@ -1,6 +1,6 @@
 # Career Day App
 
-This is a cute demo I used for Career Day at my daughter's school in Kindergarten and 1st grade. It is built using Polymer 1.x. 
+This is a cute demo I used for Career Day at my daughter's school in Kindergarten and 1st grade. It is built using [Polymer](https://www.polymer-project.org/) 1.x (perhaps I'll upgrade to Polymer 3 next year).
 
 There are two elements: `career-day-demo` (the demo from Kindergarten) and `career-day-animation-app` (the demo from 1st grade 
 with added support for two characters). Currently the app is only using `career-day-animation-app`, but you can change `index.html` 
@@ -16,7 +16,7 @@ background, and the analyst worked with the rest of the class to choose a charac
 
 ![screenshot](/images/screenshot.png)
 
-There is an accompanying presentation I gave to the kids before the demo in the `presenation` folder (Keynote format).
+There is an accompanying presentation I gave to the kids before the demo in the `presentation` folder (Keynote format).
 
 ## Install the Polymer-CLI
 
