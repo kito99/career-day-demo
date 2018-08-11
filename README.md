@@ -16,7 +16,7 @@ background, and the analyst worked with the rest of the class to choose a charac
 
 ![screenshot](/images/screenshot.png)
 
-There is an accompanying presentation I gave to the kids before the demo in the `presenation` folder (Keynote format).
+There is an accompanying presentation I gave to the kids before the demo in the `presentation` folder (Keynote format).
 
 ## Install the Polymer-CLI
 
