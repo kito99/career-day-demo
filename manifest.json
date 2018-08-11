@@ -1,0 +1,7 @@
+{
+  "name": "career-day-demo",
+  "short_name": "career-day-demo",
+  "description": "Career Day demo",
+  "start_url": "/",
+  "display": "standalone"
+}
