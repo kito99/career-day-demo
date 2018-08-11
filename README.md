@@ -20,15 +20,27 @@ Here's what the app currently looks like:
 
 However, you can easily change the image, the size of the characters, and what they say. Here's how it looked during the demo for one of the classes:
 
-![screenshot 2](/images/screenshot2.jpg)
+![screenshot2](/images/screenshot-2.jpg)
 
 # Presentation
 
 There is an accompanying presentation I gave to the kids before the demo in the `presentation` folder (Keynote format).
 
-## Install the Polymer-CLI
+# Running the App
 
-First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. Then run `polymer serve` to serve your application locally.
+## Setup
+
+After cloning the repo, make sure you have Node and npm installed. Install the dependencies:
+
+```
+npm install
+```
+
+Next, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed:
+
+```
+npm install -g polymer-cli
+```
 
 ## Viewing Your Application
 
