@@ -34,7 +34,7 @@
             is: 'career-day-animation-app',
 
             characters: {
-                helloKitty: {
+                character1: {
                     image: new Image(),
                     xPosition: 0,
                     yPosition: 0,
@@ -44,7 +44,7 @@
                     rate: 1
 
                 },
-                chase: {
+                character2: {
                     image: new Image(),
                     xPosition: 0,
                     yPosition: 110,
@@ -59,23 +59,23 @@
                 this.canvas = this.$.canvas;
                 this.canvasContext = this.canvas.getContext('2d');
 
-                const helloKitty = this.characters.helloKitty;
-                const chase = this.characters.chase;
+                const character1 = this.characters.character1;
+                const character2 = this.characters.character2;
 
-                helloKitty.image.src = '/images/characters/hello-kitty.png';
-                helloKitty.image.onload = () => {
+                character1.image.src = '/images/characters/BartSimpson.png';
+                character1.image.onload = () => {
                     this.canvasContext.clearRect(0, 0, this.canvas.width,
                         this.canvas.height);
-                    this.canvasContext.drawImage(helloKitty.image, helloKitty.xPosition,
-                        helloKitty.yPosition, helloKitty.imageWidth,
-                        helloKitty.imageHeight);
+                    this.canvasContext.drawImage(character1.image, character1.xPosition,
+                        character1.yPosition, character1.imageWidth,
+                        character1.imageHeight);
                 };
 
-                chase.image.src = '/images/characters/PAW_Patrol_Super_Spy_Chase_Running.png';
-                chase.image.onload = () => {
-                    this.canvasContext.drawImage(chase.image, chase.xPosition,
-                        chase.yPosition, chase.imageWidth,
-                        chase.imageHeight);
+                character2.image.src = '/images/characters/LisaSimpson.png';
+                character2.image.onload = () => {
+                    this.canvasContext.drawImage(character2.image, character2.xPosition,
+                        character2.yPosition, character2.imageWidth,
+                        character2.imageHeight);
                 };
 
                 this.canvas.addEventListener('click', this.tapCharacter.bind(this));
@@ -85,28 +85,28 @@
             pressKey: function (event) {
                 switch (event.keyCode) {
                     case KeyJS.RIGHT:
-                        this.moveRight(this.characters.helloKitty);
+                        this.moveRight(this.characters.character1);
                         break;
                     case KeyJS.LEFT:
-                        this.moveLeft(this.characters.helloKitty);
+                        this.moveLeft(this.characters.character1);
                         break;
                     case KeyJS.DOWN:
-                        this.moveDown(this.characters.helloKitty);
+                        this.moveDown(this.characters.character1);
                         break;
                     case KeyJS.UP:
-                        this.moveUp(this.characters.helloKitty);
+                        this.moveUp(this.characters.character1);
                         break;
                     case KeyJS.D:
-                        this.moveRight(this.characters.chase);
+                        this.moveRight(this.characters.character2);
                         break;
                     case KeyJS.S:
-                        this.moveLeft(this.characters.chase);
+                        this.moveLeft(this.characters.character2);
                         break;
                     case KeyJS.X:
-                        this.moveDown(this.characters.chase);
+                        this.moveDown(this.characters.character2);
                         break;
                     case KeyJS.E:
-                        this.moveUp(this.characters.chase);
+                        this.moveUp(this.characters.character2);
                         break;
                 }
             },
@@ -152,7 +152,7 @@
             },
 
             tapCharacter: function() {
-                this.say(this.characters.helloKitty, "Hello. My name is Hello Kitty.");
+                this.say(this.characters.character1, "Hello. My name is Hello Kitty.");
             },
 
             say: function (character, message) {
