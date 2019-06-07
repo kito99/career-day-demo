@@ -22,7 +22,7 @@
         <style>
             #canvas {
                 background: url('/images/backgrounds/6410558-wallpaper-kids.jpg');
-                background-color: #9fa8da;
+                /*background-color: #9fa8da;*/
                 background-size: 800px 500px;
             }
         </style>
@@ -39,19 +39,19 @@
                     image: new Image(),
                     xPosition: 0,
                     yPosition: 0,
-                    imageHeight: 100,
-                    imageWidth: 100,
-                    pitch: 5,
-                    rate: .7
+                    imageHeight: 500,
+                    imageWidth: 200,
+                    pitch: 10,
+                    rate: .5
 
                 },
                 character2: {
                     image: new Image(),
                     xPosition: 0,
                     yPosition: 110,
-                    imageHeight: 100,
-                    imageWidth: 100,
-                    pitch: 10,
+                    imageHeight: 500,
+                    imageWidth: 200,
+                    pitch: 1,
                     rate: .5
                 }
             },
@@ -139,7 +139,7 @@
                     character.yPosition = newPosition;
                     this.updateImage();
                 } else {
-                    this.say(character, "I can't go any lower!");
+                    this.say(character, "Flowers!");
                 }
             },
 

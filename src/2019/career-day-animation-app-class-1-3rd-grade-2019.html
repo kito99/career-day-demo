@@ -21,8 +21,8 @@
     <template>
         <style>
             #canvas {
-                background: url('/images/backgrounds/6410558-wallpaper-kids.jpg');
-                background-color: #9fa8da;
+                background: url('/images/backgrounds/6410447-wallpaper-kids.jpg');
+                /*background-color: #9fa8da;*/
                 background-size: 800px 500px;
             }
         </style>
@@ -41,8 +41,8 @@
                     yPosition: 0,
                     imageHeight: 100,
                     imageWidth: 100,
-                    pitch: 5,
-                    rate: .7
+                    pitch: 0.5,
+                    rate: 1
 
                 },
                 character2: {
@@ -52,7 +52,7 @@
                     imageHeight: 100,
                     imageWidth: 100,
                     pitch: 10,
-                    rate: .5
+                    rate: 1
                 }
             },
 
@@ -63,7 +63,7 @@
                 const character1 = this.characters.character1;
                 const character2 = this.characters.character2;
 
-                character1.image.src = '/images/characters/SpongeBob_SquarePants.png';
+                character1.image.src = '/images/characters/BartSimpson.png';
                 character1.image.onload = () => {
                     this.canvasContext.clearRect(0, 0, this.canvas.width,
                         this.canvas.height);
@@ -72,7 +72,7 @@
                         character1.imageHeight);
                 };
 
-                character2.image.src = '/images/characters/Alvin.png';
+                character2.image.src = '/images/characters/SpongeBob_SquarePants.png';
                 character2.image.onload = () => {
                     this.canvasContext.drawImage(character2.image, character2.xPosition,
                         character2.yPosition, character2.imageWidth,
@@ -139,7 +139,7 @@
                     character.yPosition = newPosition;
                     this.updateImage();
                 } else {
-                    this.say(character, "I can't go any lower!");
+                    this.say(character, "Ha ha ha!");
                 }
             },
 
@@ -149,7 +149,7 @@
                     character.yPosition = newPosition;
                     this.updateImage();
                 } else {
-                    this.say(character, "I want my cheetos!");
+                    this.say(character, "This is too high!");
                 }
             },
 
