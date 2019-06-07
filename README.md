@@ -1,6 +1,6 @@
 # Career Day App
 
-This is a cute demo I used for Career Day at my daughter's school in Kindergarten and 1st grade (2018). It is built using [Polymer](https://www.polymer-project.org/) 1.x (perhaps I'll upgrade to Polymer 3 next year).
+This is a cute demo I used for Career Day at my daughter's elementary school (in 2017-2019). It is built using [Polymer](https://www.polymer-project.org/) 1.x (perhaps I'll upgrade to LitElement next year).
 
 There are two elements: `career-day-demo` (the demo from Kindergarten) and `career-day-animation-app` (the demo from 1st grade 
 with added support for two characters). Currently the app is only using `career-day-animation-app`, but you can change `index.html` 
@@ -16,16 +16,48 @@ tweak the size of the characters and the pitch and rate of their voices.
 
 It was cool to see which characters and backgrounds each class chose; In 2019, I started keeping a copy the version each class created -- see the `src/2019` folder.
 
+Here's what the app currently looks like:
+
 ![screenshot](/images/screenshot.png)
+
+However, you can easily change the image, the size of the characters, and what they say. Here's how it looked during the demo for one of the classes:
+
+![screenshot2](/images/screenshot-2.jpg)
+
+# Presentation
 
 There is an accompanying presentation I gave to the kids before the demo in the `presentation` folder (Keynote format).
 
-## Install the Polymer-CLI
+# Running the App
 
-In order to run the app, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. 
+## Setup
+
+After cloning the repo, make sure you have Node and npm installed. Install the dependencies:
+
+```
+npm install
+```
+
+Next, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed:
+
+```
+npm install -g polymer-cli
+```
 
 ## Viewing Your Application
 
 ```
 $ polymer serve
+```
+
+## Building Your Application
+
+```
+$ polymer build
+```
+
+This will create builds of your application in the `build/` directory, optimized to be served in production. You can then serve the built versions by giving `polymer serve` a folder to serve from:
+
+```
+$ polymer serve build/default
 ```
