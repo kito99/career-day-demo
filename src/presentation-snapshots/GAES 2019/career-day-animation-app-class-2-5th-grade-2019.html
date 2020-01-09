@@ -1,0 +1,183 @@
+/*
+    Copyright 2018 Kito D. Mann
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+    IN THE SOFTWARE.
+*/
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/k-speech/k-speech.html">
+<script language="javascript" src="key.min.js"></script>
+
+<dom-module id="career-day-animation-app">
+    <template>
+        <style>
+            #canvas {
+                background: url('/images/backgrounds/6410447-wallpaper-kids.jpg');
+                /*background-color: #9fa8da;*/
+                background-size: 800px 500px;
+            }
+        </style>
+        <canvas id="canvas" width="800px" height="500px"></canvas>
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'career-day-animation-app',
+
+            characters: {
+                character1: {
+                    image: new Image(),
+                    xPosition: 0,
+                    yPosition: 0,
+                    imageHeight: 100,
+                    imageWidth: 100,
+                    pitch: 0.5,
+                    rate: 1
+
+                },
+                character2: {
+                    image: new Image(),
+                    xPosition: 0,
+                    yPosition: 110,
+                    imageHeight: 100,
+                    imageWidth: 100,
+                    pitch: 10,
+                    rate: 1
+                }
+            },
+
+            ready: function () {
+                this.canvas = this.$.canvas;
+                this.canvasContext = this.canvas.getContext('2d');
+
+                const character1 = this.characters.character1;
+                const character2 = this.characters.character2;
+
+                character1.image.src = '/images/characters/BartSimpson.png';
+                character1.image.onload = () => {
+                    this.canvasContext.clearRect(0, 0, this.canvas.width,
+                        this.canvas.height);
+                    this.canvasContext.drawImage(character1.image, character1.xPosition,
+                        character1.yPosition, character1.imageWidth,
+                        character1.imageHeight);
+                };
+
+                character2.image.src = '/images/characters/SpongeBob_SquarePants.png';
+                character2.image.onload = () => {
+                    this.canvasContext.drawImage(character2.image, character2.xPosition,
+                        character2.yPosition, character2.imageWidth,
+                        character2.imageHeight);
+                };
+
+                this.canvas.addEventListener('click', this.tapCharacter.bind(this));
+                window.addEventListener('keydown', this.pressKey.bind(this));
+            },
+
+            pressKey: function (event) {
+                switch (event.keyCode) {
+                    case KeyJS.RIGHT:
+                        this.moveRight(this.characters.character1);
+                        break;
+                    case KeyJS.LEFT:
+                        this.moveLeft(this.characters.character1);
+                        break;
+                    case KeyJS.DOWN:
+                        this.moveDown(this.characters.character1);
+                        break;
+                    case KeyJS.UP:
+                        this.moveUp(this.characters.character1);
+                        break;
+
+                    case KeyJS.D:
+                        this.moveRight(this.characters.character2);
+                        break;
+                    case KeyJS.S:
+                        this.moveLeft(this.characters.character2);
+                        break;
+                    case KeyJS.X:
+                        this.moveDown(this.characters.character2);
+                        break;
+                    case KeyJS.E:
+                        this.moveUp(this.characters.character2);
+                        break;
+                }
+            },
+
+            moveRight: function (character) {
+                const newPosition = character.xPosition + 20;
+                if (newPosition < this.canvas.width - character.imageWidth) {
+                    character.xPosition = newPosition;
+                    this.updateImage();
+                } else {
+                    this.say(character, "Ouch!");
+                }
+            },
+
+            moveLeft: function (character) {
+                const newPosition = character.xPosition - 20;
+                if (newPosition > 0) {
+                    character.xPosition = newPosition;
+                    this.updateImage();
+                } else {
+                    this.say(character, "Ouch!");
+                }
+            },
+
+            moveDown: function (character) {
+                const newPosition = character.yPosition + 20;
+                if (newPosition < (this.canvas.height - character.imageHeight)) {
+                    character.yPosition = newPosition;
+                    this.updateImage();
+                } else {
+                    this.say(character, "Ha ha ha!");
+                }
+            },
+
+            moveUp: function(character) {
+                const newPosition = character.yPosition - 20;
+                if (newPosition > 0) {
+                    character.yPosition = newPosition;
+                    this.updateImage();
+                } else {
+                    this.say(character, "This is too high!");
+                }
+            },
+
+            tapCharacter: function() {
+                this.say(this.characters.character1, "Hey! What are you clicking at?");
+            },
+
+            say: function (character, message) {
+                const utterance = new SpeechSynthesisUtterance(message);
+                utterance.pitch = character.pitch;
+                utterance.rate = character.rate;
+                this.debounce("say", () => {
+                    window.speechSynthesis.speak(utterance);
+                }, 500);
+            },
+
+            updateImage: function () {
+                this.canvasContext.clearRect(0, 0, this.canvas.width,
+                    this.canvas.height);
+                for (let name in this.characters) {
+                    const character = this.characters[name];
+                    this.canvasContext.drawImage(character.image,
+                        character.xPosition,
+                        character.yPosition,
+                        character.imageWidth,
+                        character.imageHeight);
+                }
+            }
+        })
+    </script>
+</dom-module>

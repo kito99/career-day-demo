@@ -1,8 +1,9 @@
 # Career Day App
 
-This is a cute demo I used for Career Day at my daughter's elementary school (in 2017-2019). It is built using [Polymer](https://www.polymer-project.org/) 1.x (perhaps I'll upgrade to LitElement next year).
+This is a cute demo I used for Career Day at my daughter's elementary school (in 2017-2019). It is built using 
+[Polymer](https://www.polymer-project.org/) 1.x (perhaps I'll upgrade to [LitElement](https://lit-element.polymer-project.org/) next year).
 
-There are two elements: `career-day-demo` (the demo from Kindergarten) and `career-day-animation-app` (the demo from 1st grade 
+There are two elements: `career-day-demo` (the demo from Kindergarten) and `career-day-animation-app` (the demo from 1st and 2nd grade  
 with added support for two characters). Currently the app is only using `career-day-animation-app`, but you can change `index.html` 
 to see the previous (simpler) demo.
 
@@ -14,15 +15,19 @@ For the demo, I picked out a "designer" and a "business analyst" from the class 
 background, and the analyst worked with the rest of the class to choose a character and change what the characters said. Then the designer could 
 tweak the size of the characters and the pitch and rate of their voices. 
 
-It was cool to see which characters and backgrounds each class chose; In 2019, I started keeping a copy the version each class created -- see the `src/2019` folder.
+I also gave this presentation at [CodeMash/KidzMash](https://www.codemash.org/) 2020, where I added some more characters 
+(including baby yoda) and the ability for the characters to make a sound when you click on them. 
+
+It was cool to see which characters and backgrounds each class chose; In 2019, I started keeping a copy the version each class created -- 
+see the `src/presentaton-snapshots` folder.
 
 Here's what the app currently looks like:
 
-![screenshot](/images/screenshot.png)
+![screenshot](/images/screenshots/screenshot.png)
 
 However, you can easily change the image, the size of the characters, and what they say. Here's how it looked during the demo for one of the classes:
 
-![screenshot2](/images/screenshot-2.jpg)
+![screenshot2](/images/screenshots/screenshot-2.jpg)
 
 # Presentation
 
