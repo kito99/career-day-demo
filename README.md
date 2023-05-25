@@ -1,6 +1,6 @@
 # Career Day App
 
-This is a cute demo I used for Career Day at my daughter's elementary school (in 2017-2019). It is built using 
+This is a cute demo I used for Career Day at my kids' elementary school (in 2017-2019 and 2022). It is built using 
 [Polymer](https://www.polymer-project.org/) 1.x (perhaps I'll upgrade to [LitElement](https://lit-element.polymer-project.org/) next year).
 
 There are two elements: `career-day-demo` (the demo from Kindergarten) and `career-day-animation-app` (the demo from 1st and 2nd grade  
