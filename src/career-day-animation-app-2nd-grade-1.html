@@ -1,0 +1,221 @@
+/*
+Copyright 2018-22 Kito D. Mann
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+*/
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/k-speech/k-speech.html">
+<script type="application/javascript" src="key.min.js"></script>
+
+<dom-module id="career-day-animation-app">
+    <template>
+        <style>
+            #canvas {
+                background-color: #9fa8da;
+                background: url('/images/backgrounds/stars.jpg');
+                /*background-size: 1024px 768px;*/
+            }
+        </style>
+        <canvas id="canvas" width="1024px" height="768px"></canvas>
+        <audio id="audioPlayer">
+            <source id="sound">
+        </audio>
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'career-day-animation-app',
+
+            characters: {
+                character1: {
+                    image: new Image(),
+                    xPosition: 0,
+                    yPosition: 0,
+                    imageHeight: 300,
+                    imageWidth: 250,
+                    pitch: 1.2, // 0-2
+                    rate: 1, // 0.1 - 10
+                    imagePath: '/images/characters/baby-yoda.png',
+                    // soundPath: '/sounds/yoda-helpyou.wav',
+                    soundType: 'audio/wav',
+                    tooHighPhrase: "I'm out of oxygen",
+                    tooLowPhrase: 'May the force be with you',
+                    tooFarRightPhrase: '',
+                    tooFarLeftPhrase: ''
+                },
+                character2: {
+                    image: new Image(),
+                    xPosition: 0,
+                    yPosition: 210,
+                    imageHeight: 300,
+                    imageWidth: 250,
+                    pitch: 1, // 0-2
+                    rate: 1, // 0.1 - 10
+                    imagePath: '/images/characters/BossBaby.png',
+                    // soundPath: '/sounds/large-bubble.mp3',
+                    soundType: 'audio/mp3',
+                    tooHighPhrase: "I'm bossy",
+                    tooLowPhrase: "Don't bring me to my crib",
+                    tooFarRightPhrase: '',
+                    tooFarLeftPhrase: ''
+                }
+            },
+
+            ready: function () {
+                this.audioPlayer = this.$.audioPlayer;
+
+                this.canvas = this.$.canvas;
+                this.canvasContext = this.canvas.getContext('2d');
+
+                this.setupCharacters();
+            },
+
+            setupCharacters() {
+                const character1 = this.characters.character1;
+                const character2 = this.characters.character2;
+
+                character1.image.src = character1.imagePath;
+                character1.image.onload = () => {
+                    this.updateImage();
+                };
+
+                character2.image.src = character2.imagePath;
+                character2.image.onload = () => {
+                    this.updateImage();
+                };
+
+                this.canvas.addEventListener('click', this.tapCharacter.bind(this));
+                window.addEventListener('keydown', this.pressKey.bind(this));
+            },
+
+            pressKey: function (event) {
+                switch (event.keyCode) {
+                    case KeyJS.RIGHT:
+                        this.moveRight(this.characters.character1);
+                        break;
+                    case KeyJS.LEFT:
+                        this.moveLeft(this.characters.character1);
+                        break;
+                    case KeyJS.DOWN:
+                        this.moveDown(this.characters.character1);
+                        break;
+                    case KeyJS.UP:
+                        this.moveUp(this.characters.character1);
+                        break;
+
+                    case KeyJS.D:
+                        this.moveRight(this.characters.character2);
+                        break;
+                    case KeyJS.S:
+                        this.moveRight(this.characters.character2);
+                        break;
+                    case KeyJS.X:
+                        this.moveDown(this.characters.character2);
+                        break;
+                    case KeyJS.E:
+                        this.moveUp(this.characters.character2);
+                        break;
+                }
+            },
+
+            moveRight: function (character) {
+                const newPosition = character.xPosition + 20;
+                if (newPosition < this.canvas.width - character.imageWidth) {
+                    character.xPosition = newPosition;
+                    this.updateImage();
+                } else {
+                    this.say(character, character.tooFarRightPhrase);
+                }
+            },
+
+            moveLeft: function (character) {
+                const newPosition = character.xPosition - 20;
+                if (newPosition > 0) {
+                    character.xPosition = newPosition;
+                    this.updateImage();
+                } else {
+                    this.say(character, character.tooFarLeftPhrase);
+                }
+            },
+
+            moveDown: function (character) {
+                const newPosition = character.yPosition + 20;
+                if (newPosition < (this.canvas.height - character.imageHeight)) {
+                    character.yPosition = newPosition;
+                    this.updateImage();
+                } else {
+                    this.say(character, character.tooLowPhrase);
+                }
+            },
+
+            moveUp: function (character) {
+                const newPosition = character.yPosition - 20;
+                if (newPosition > 0) {
+                    character.yPosition = newPosition;
+                    this.updateImage();
+                } else {
+                    this.say(character, character.tooHighPhrase);
+                }
+            },
+
+            tapCharacter: function (mouseEvent) {
+                let selectedCharacters = Object.values(this.characters).filter(character => {
+                    return this.tapped(character, mouseEvent);
+                });
+                if (selectedCharacters.length > 0) {
+                    this.playSound(selectedCharacters[0]);
+                }
+            },
+
+            say: function (character, message) {
+                const utterance = new SpeechSynthesisUtterance(message);
+                utterance.pitch = character.pitch;
+                utterance.rate = character.rate;
+                this.debounce("say", () => {
+                    window.speechSynthesis.speak(utterance);
+                }, 500);
+            },
+
+            playSound: function (selectedCharacter) {
+                if (selectedCharacter.soundPath) {
+                    this.audioPlayer.querySelector('#sound').src = selectedCharacter.soundPath;
+                    this.audioPlayer.querySelector('#sound').setAttribute('type', selectedCharacter.soundType);
+                    this.audioPlayer.load();
+                    this.audioPlayer.play();
+                }
+            },
+
+            updateImage: function () {
+                this.canvasContext.clearRect(0, 0, this.canvas.width,
+                    this.canvas.height);
+                for (let name in this.characters) {
+                    const character = this.characters[name];
+                    this.canvasContext.drawImage(character.image,
+                        character.xPosition,
+                        character.yPosition,
+                        character.imageWidth,
+                        character.imageHeight);
+                }
+            },
+
+            tapped(character, mouseEvent) {
+                if ((mouseEvent.clientX > character.xPosition && mouseEvent.clientX < character.xPosition + character.imageWidth) &&
+                    (mouseEvent.clientY > character.yPosition && mouseEvent.clientY < character.yPosition + character.imageHeight)) {
+                    return true;
+                }
+                return false;
+            }
+        })
+    </script>
+</dom-module>

@@ -1,5 +1,5 @@
 /*
-Copyright 2018 Kito D. Mann
+Copyright 2018-22 Kito D. Mann
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
 to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -15,7 +15,7 @@ IN THE SOFTWARE.
 
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/k-speech/k-speech.html">
-<script language="javascript" src="key.min.js"></script>
+<script type="application/javascript" src="key.min.js"></script>
 
 <dom-module id="career-day-animation-app">
     <template>
@@ -42,33 +42,33 @@ IN THE SOFTWARE.
                     image: new Image(),
                     xPosition: 0,
                     yPosition: 0,
-                    imageHeight: 200,
-                    imageWidth: 150,
-                    pitch: 1.2, // 0-2
+                    imageHeight: 400,
+                    imageWidth: 400,
+                    pitch: 2, // 0-2
                     rate: 1, // 0.1 - 10
-                    imagePath: '/images/characters/baby-yoda.png',
-                    soundPath: '/sounds/yoda-helpyou.wav',
+                    imagePath: '/images/characters/pikachu.png',
+                    // soundPath: '/sounds/yoda-helpyou.wav',
                     soundType: 'audio/wav',
-                    tooHighPhrase: 'May the force be with you',
-                    tooLowPhrase: 'May the force be with you',
-                    tooFarRightPhrase: 'Ouch!',
-                    tooFarLeftPhrase: 'Ouch!'
+                    tooHighPhrase: "I'm flying in space!",
+                    tooLowPhrase: "Oh no, the monsters are going to eat me!",
+                    tooFarRightPhrase: 'Too far right!',
+                    tooFarLeftPhrase: 'Too far left!'
                 },
                 character2: {
                     image: new Image(),
                     xPosition: 0,
                     yPosition: 210,
-                    imageHeight: 200,
-                    imageWidth: 150,
-                    pitch: 1.7, // 0-2
+                    imageHeight: 400,
+                    imageWidth: 400,
+                    pitch: 1, // 0-2
                     rate: 1, // 0.1 - 10
-                    imagePath: '/images/characters/SpongeBob_SquarePants.png',
-                    soundPath: '/sounds/large-bubble.mp3',
+                    imagePath: '/images/characters/harold.png',
+                    // soundPath: '/sounds/large-bubble.mp3',
                     soundType: 'audio/mp3',
-                    tooHighPhrase: 'Who lives in a pineapple under the sea',
-                    tooLowPhrase: 'Who lives in a pineapple under the sea',
-                    tooFarRightPhrase: 'Me like crabby patties!',
-                    tooFarLeftPhrase: 'Me like crabby patties!'
+                    tooHighPhrase: "Get me down from here!",
+                    tooLowPhrase: "I have chubby cheeks!",
+                    tooFarRightPhrase: 'Too far right!',
+                    tooFarLeftPhrase: 'Too far left!'
                 }
             },
 
@@ -115,10 +115,10 @@ IN THE SOFTWARE.
                         break;
 
                     case KeyJS.D:
-                        this.moveRight(this.characters.character2);
+                        this.moveLeft(this.characters.character2);
                         break;
                     case KeyJS.S:
-                        this.moveLeft(this.characters.character2);
+                        this.moveRight(this.characters.character2);
                         break;
                     case KeyJS.X:
                         this.moveDown(this.characters.character2);

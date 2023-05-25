@@ -11,9 +11,10 @@ to see the previous (simpler) demo.
 the keyboard. It currently supports two characters; one can be moved with the arrow keys, and the other can be moved using S, E, D, and X. 
 When the characters reach the end of the canvas, they use the Web Speech API to complain. 
 
-For the demo, I picked out a "designer" and a "business analyst" from the class to help me customize the app. The designer got to choose the 
+For the demo, I picked out a "designer", a "product owner", and a "tester" from the class to help me customize the app. The designer got to choose the 
 background, and the analyst worked with the rest of the class to choose a character and change what the characters said. Then the designer could 
-tweak the size of the characters and the pitch and rate of their voices. 
+tweak the size of the characters and the pitch and rate of their voices. I introduced a couple of bugs (such as the key assignments) for the tester
+to discover.
 
 I also gave this presentation at [CodeMash/KidzMash](https://www.codemash.org/) 2020, where I added some more characters 
 (including baby yoda) and the ability for the characters to make a sound when you click on them. 
@@ -29,7 +30,7 @@ However, you can easily change the image, the size of the characters, and what t
 
 ![screenshot2](/images/screenshots/screenshot-2.jpg)
 
-# Presentation
+# Presentation 
 
 There is an accompanying presentation I gave to the kids before the demo in the `presentation` folder (Keynote format).
 
