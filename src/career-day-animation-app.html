@@ -20,13 +20,18 @@ IN THE SOFTWARE.
 <dom-module id="career-day-animation-app">
     <template>
         <style>
-            #canvas {
-                background-color: #9fa8da;
-                /*background: url('/images/backgrounds/stars.jpg');*/
-                background-size: 1024px 768px;
+            .playground {
+                transition: opacity 2s ease-in;
+                opacity: 5%;
+            }
+            .background {
+                background: url('/images/backgrounds/books-on-table.jpg');
+                background-size: cover;
+                background-position: center;
+                opacity: 100%;
             }
         </style>
-        <canvas id="canvas" width="1024px" height="768px"></canvas>
+        <canvas id="canvas" width="1024px" height="768px" class="playground"></canvas>
         <audio id="audioPlayer">
             <source id="sound">
         </audio>
@@ -46,9 +51,9 @@ IN THE SOFTWARE.
                     imageWidth: 150,
                     pitch: 2, // 0-2
                     rate: 1, // 0.1 - 10
-                    imagePath: '/images/characters/pikachu.png',
-                    soundPath: '/sounds/chipmunk-laugh.wav',
-                    soundType: 'audio/wav',
+                    imagePath: '/images/characters/happy-robot.png',
+                    soundPath: '/sounds/chipmunk-laugh.mp3',
+                    soundType: 'audio/mp3',
                     tooHighPhrase: "Too high",
                     tooLowPhrase: "To low!",
                     tooFarRightPhrase: 'Too far right!',
@@ -62,7 +67,7 @@ IN THE SOFTWARE.
                     imageWidth: 150,
                     pitch: 1, // 0-2
                     rate: 1, // 0.1 - 10
-                    imagePath: '/images/characters/harold.png',
+                    imagePath: '/images/characters/bad-kitty.png',
                     soundPath: '/sounds/large-bubble.mp3',
                     soundType: 'audio/mp3',
                     tooHighPhrase: "Too high",
@@ -101,6 +106,9 @@ IN THE SOFTWARE.
 
             pressKey: function (event) {
                 switch (event.keyCode) {
+                    case KeyJS.SPACEBAR:
+                        this.canvas.classList.add('background');
+                        break;
                     case KeyJS.RIGHT:
                         this.moveRight(this.characters.character1);
                         break;
@@ -113,12 +121,11 @@ IN THE SOFTWARE.
                     case KeyJS.UP:
                         this.moveUp(this.characters.character1);
                         break;
-
                     case KeyJS.D:
-                        this.moveLeft(this.characters.character2);
+                        this.moveRight(this.characters.character2);
                         break;
                     case KeyJS.S:
-                        this.moveRight(this.characters.character2);
+                        this.moveLeft(this.characters.character2);
                         break;
                     case KeyJS.X:
                         this.moveDown(this.characters.character2);
