@@ -1,5 +1,5 @@
 /*
-Copyright 2018-23 Kito D. Mann
+Copyright 2018-2025 Kito D. Mann
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
 to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,7 +14,6 @@ IN THE SOFTWARE.
 */
 
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/k-speech/k-speech.html">
 <script type="application/javascript" src="key.min.js"></script>
 
 <dom-module id="career-day-animation-app">
@@ -25,7 +24,7 @@ IN THE SOFTWARE.
                 opacity: 5%;
             }
             .background {
-                background: url('/images/backgrounds/books-on-table.jpg');
+                background: url('/images/backgrounds/books-on-table.jpg'); /* Step 1.*/
                 background-size: cover;
                 background-position: center;
                 opacity: 100%;
@@ -35,6 +34,7 @@ IN THE SOFTWARE.
         <audio id="audioPlayer">
             <source id="sound">
         </audio>
+        <div>Press [SPACE] to toggle the background. Use the arrow keys and W,A,S, and D to move the characters.</div>
     </template>
 
     <script>
@@ -51,7 +51,7 @@ IN THE SOFTWARE.
                     imageWidth: 150,
                     pitch: 2, // 0-2
                     rate: 1, // 0.1 - 10
-                    imagePath: '/images/characters/happy-robot.png',
+                    imagePath: '/images/characters/happy-robot.png', // Step 2
                     soundPath: '/sounds/chipmunk-laugh.mp3',
                     soundType: 'audio/mp3',
                     tooHighPhrase: "Too high",
@@ -67,7 +67,7 @@ IN THE SOFTWARE.
                     imageWidth: 150,
                     pitch: 1, // 0-2
                     rate: 1, // 0.1 - 10
-                    imagePath: '/images/characters/bad-kitty.png',
+                    imagePath: '/images/characters/bad-kitty.png', // Step 3
                     soundPath: '/sounds/large-bubble.mp3',
                     soundType: 'audio/mp3',
                     tooHighPhrase: "Too high",
@@ -90,15 +90,15 @@ IN THE SOFTWARE.
                 const character1 = this.characters.character1;
                 const character2 = this.characters.character2;
 
-                // character1.image.src = character1.imagePath;
-                // character1.image.onload = () => {
-                //     this.updateImage();
-                // };
-                //
-                // character2.image.src = character2.imagePath;
-                // character2.image.onload = () => {
-                //     this.updateImage();
-                // };
+                character1.image.src = character1.imagePath;
+                character1.image.onload = () => {
+                    this.updateImage();
+                };
+
+                character2.image.src = character2.imagePath;
+                character2.image.onload = () => {
+                    this.updateImage();
+                };
 
                 this.canvas.addEventListener('click', this.tapCharacter.bind(this));
                 window.addEventListener('keydown', this.pressKey.bind(this));
@@ -107,7 +107,7 @@ IN THE SOFTWARE.
             pressKey: function (event) {
                 switch (event.keyCode) {
                     case KeyJS.SPACEBAR:
-                        this.canvas.classList.add('background');
+                        this.canvas.classList.toggle('background');
                         break;
                     case KeyJS.RIGHT:
                         this.moveRight(this.characters.character1);
@@ -124,13 +124,13 @@ IN THE SOFTWARE.
                     case KeyJS.D:
                         this.moveRight(this.characters.character2);
                         break;
-                    case KeyJS.S:
+                    case KeyJS.A:
                         this.moveLeft(this.characters.character2);
                         break;
-                    case KeyJS.X:
+                    case KeyJS.S:
                         this.moveDown(this.characters.character2);
                         break;
-                    case KeyJS.E:
+                    case KeyJS.W:
                         this.moveUp(this.characters.character2);
                         break;
                 }
@@ -139,8 +139,11 @@ IN THE SOFTWARE.
             moveRight: function (character) {
                 const newPosition = character.xPosition + 20;
                 if (newPosition < this.canvas.width - character.imageWidth) {
-                    character.xPosition = newPosition;
-                    this.updateImage();
+                    // Check for collision before moving
+                    if (!this.checkCollision(character, newPosition, character.yPosition)) {
+                        character.xPosition = newPosition;
+                        this.updateImage();
+                    }
                 } else {
                     this.say(character, character.tooFarRightPhrase);
                 }
@@ -149,8 +152,11 @@ IN THE SOFTWARE.
             moveLeft: function (character) {
                 const newPosition = character.xPosition - 20;
                 if (newPosition > 0) {
-                    character.xPosition = newPosition;
-                    this.updateImage();
+                    // Check for collision before moving
+                    if (!this.checkCollision(character, newPosition, character.yPosition)) {
+                        character.xPosition = newPosition;
+                        this.updateImage();
+                    }
                 } else {
                     this.say(character, character.tooFarLeftPhrase);
                 }
@@ -159,8 +165,11 @@ IN THE SOFTWARE.
             moveDown: function (character) {
                 const newPosition = character.yPosition + 20;
                 if (newPosition < (this.canvas.height - character.imageHeight)) {
-                    character.yPosition = newPosition;
-                    this.updateImage();
+                    // Check for collision before moving
+                    if (!this.checkCollision(character, character.xPosition, newPosition)) {
+                        character.yPosition = newPosition;
+                        this.updateImage();
+                    }
                 } else {
                     this.say(character, character.tooLowPhrase);
                 }
@@ -169,15 +178,18 @@ IN THE SOFTWARE.
             moveUp: function (character) {
                 const newPosition = character.yPosition - 20;
                 if (newPosition > 0) {
-                    character.yPosition = newPosition;
-                    this.updateImage();
+                    // Check for collision before moving
+                    if (!this.checkCollision(character, character.xPosition, newPosition)) {
+                        character.yPosition = newPosition;
+                        this.updateImage();
+                    }
                 } else {
                     this.say(character, character.tooHighPhrase);
                 }
             },
 
             tapCharacter: function (mouseEvent) {
-                let selectedCharacters = Object.values(this.characters).filter(character => {
+                const selectedCharacters = Object.values(this.characters).filter(character => {
                     return this.tapped(character, mouseEvent);
                 });
                 if (selectedCharacters.length > 0) {
@@ -219,6 +231,25 @@ IN THE SOFTWARE.
             tapped(character, mouseEvent) {
                 if ((mouseEvent.clientX > character.xPosition && mouseEvent.clientX < character.xPosition + character.imageWidth) &&
                     (mouseEvent.clientY > character.yPosition && mouseEvent.clientY < character.yPosition + character.imageHeight)) {
+                    return true;
+                }
+                return false;
+            },
+
+            checkCollision(character, newX, newY) {
+                // Get the other character to check collision with
+                const otherCharacter = character === this.characters.character1 ?
+                    this.characters.character2 : this.characters.character1;
+
+                // Check if the bounding boxes overlap
+                if (
+                    newX < otherCharacter.xPosition + otherCharacter.imageWidth &&
+                    newX + character.imageWidth > otherCharacter.xPosition &&
+                    newY < otherCharacter.yPosition + otherCharacter.imageHeight &&
+                    newY + character.imageHeight > otherCharacter.yPosition
+                ) {
+                    // Collision detected
+                    this.say(otherCharacter, "Hey, watch out!");
                     return true;
                 }
                 return false;
