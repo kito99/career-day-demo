@@ -1,5 +1,5 @@
 /*
-Copyright 2018-23 Kito D. Mann
+Copyright 2018-2025 Kito D. Mann
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
 to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
@@ -14,33 +14,45 @@ IN THE SOFTWARE.
 */
 
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/k-speech/k-speech.html">
 <script type="application/javascript" src="key.min.js"></script>
 
 <dom-module id="career-day-animation-app">
+
+    <!-- What language is this? -->
     <template>
         <style>
+            /**  What language is this? **/
             .playground {
                 transition: opacity 2s ease-in;
                 opacity: 5%;
             }
-            .background {
-                background: url('/images/backgrounds/books-on-table.jpg');
-                background-size: cover;
-                background-position: center;
-                opacity: 100%;
+
+            button {
+                margin-top: 10px;
+                padding: 8px 16px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
             }
         </style>
         <canvas id="canvas" width="1024px" height="768px" class="playground"></canvas>
         <audio id="audioPlayer">
             <source id="sound">
         </audio>
+        <div>Press [SPACE] to toggle the background. Use the arrow keys and W,A,S, and D to move the characters.</div>
+        <button id="snapshotButton">Describe Scene</button>
     </template>
 
     <script>
+        <!-- What language is this? -->
         Polymer({
 
             is: 'career-day-animation-app',
+
+            // Step 2:(product owner): Pick out characters and what they say
+            // Step 3 (designer): change size of characters and pitch/rate of characters
 
             characters: {
                 character1: {
@@ -51,7 +63,7 @@ IN THE SOFTWARE.
                     imageWidth: 150,
                     pitch: 2, // 0-2
                     rate: 1, // 0.1 - 10
-                    imagePath: '/images/characters/happy-robot.png',
+                    imagePath: '/images/characters/blank.png',
                     soundPath: '/sounds/chipmunk-laugh.mp3',
                     soundType: 'audio/mp3',
                     tooHighPhrase: "Too high",
@@ -67,7 +79,7 @@ IN THE SOFTWARE.
                     imageWidth: 150,
                     pitch: 1, // 0-2
                     rate: 1, // 0.1 - 10
-                    imagePath: '/images/characters/bad-kitty.png',
+                    imagePath: '/images/characters/blank.png',
                     soundPath: '/sounds/large-bubble.mp3',
                     soundType: 'audio/mp3',
                     tooHighPhrase: "Too high",
@@ -81,24 +93,37 @@ IN THE SOFTWARE.
                 this.audioPlayer = this.$.audioPlayer;
 
                 this.canvas = this.$.canvas;
+                this.canvas.style.opacity = '0.05';
                 this.canvasContext = this.canvas.getContext('2d');
+                this.snapshotButton = this.$.snapshotButton;
 
-                this.setupCharacters();
+                // Initialize background image
+                this.backgroundImage = new Image();
+                // this.backgroundImage.src = '/images/backgrounds/rainbow.png'; // Step 1 (designer): pick background image
+                this.showBackground = true;
+                this.backgroundImage.onload = () => {
+                    this.updateImage();
+                };
+
+                // this.setupCharacters(); // Step 2 (product owner)
+
+                // Add event listener for the snapshot button
+                this.snapshotButton.addEventListener('click', this.takeSnapshotAndDescribe.bind(this));
             },
 
             setupCharacters() {
                 const character1 = this.characters.character1;
                 const character2 = this.characters.character2;
 
-                // character1.image.src = character1.imagePath;
-                // character1.image.onload = () => {
-                //     this.updateImage();
-                // };
-                //
-                // character2.image.src = character2.imagePath;
-                // character2.image.onload = () => {
-                //     this.updateImage();
-                // };
+                character1.image.src = character1.imagePath;
+                character1.image.onload = () => {
+                    this.updateImage();
+                };
+
+                character2.image.src = character2.imagePath;
+                character2.image.onload = () => {
+                    this.updateImage();
+                };
 
                 this.canvas.addEventListener('click', this.tapCharacter.bind(this));
                 window.addEventListener('keydown', this.pressKey.bind(this));
@@ -107,7 +132,8 @@ IN THE SOFTWARE.
             pressKey: function (event) {
                 switch (event.keyCode) {
                     case KeyJS.SPACEBAR:
-                        this.canvas.classList.add('background');
+                        this.showBackground = !this.showBackground;
+                        this.updateImage();
                         break;
                     case KeyJS.RIGHT:
                         this.moveRight(this.characters.character1);
@@ -124,13 +150,13 @@ IN THE SOFTWARE.
                     case KeyJS.D:
                         this.moveRight(this.characters.character2);
                         break;
-                    case KeyJS.S:
+                    case KeyJS.A:
                         this.moveLeft(this.characters.character2);
                         break;
-                    case KeyJS.X:
+                    case KeyJS.S:
                         this.moveDown(this.characters.character2);
                         break;
-                    case KeyJS.E:
+                    case KeyJS.W:
                         this.moveUp(this.characters.character2);
                         break;
                 }
@@ -139,8 +165,11 @@ IN THE SOFTWARE.
             moveRight: function (character) {
                 const newPosition = character.xPosition + 20;
                 if (newPosition < this.canvas.width - character.imageWidth) {
-                    character.xPosition = newPosition;
-                    this.updateImage();
+                    // Check for collision before moving
+                    if (!this.checkCollision(character, newPosition, character.yPosition)) {
+                        character.xPosition = newPosition;
+                        this.updateImage();
+                    }
                 } else {
                     this.say(character, character.tooFarRightPhrase);
                 }
@@ -149,8 +178,11 @@ IN THE SOFTWARE.
             moveLeft: function (character) {
                 const newPosition = character.xPosition - 20;
                 if (newPosition > 0) {
-                    character.xPosition = newPosition;
-                    this.updateImage();
+                    // Check for collision before moving
+                    if (!this.checkCollision(character, newPosition, character.yPosition)) {
+                        character.xPosition = newPosition;
+                        this.updateImage();
+                    }
                 } else {
                     this.say(character, character.tooFarLeftPhrase);
                 }
@@ -159,8 +191,11 @@ IN THE SOFTWARE.
             moveDown: function (character) {
                 const newPosition = character.yPosition + 20;
                 if (newPosition < (this.canvas.height - character.imageHeight)) {
-                    character.yPosition = newPosition;
-                    this.updateImage();
+                    // Check for collision before moving
+                    if (!this.checkCollision(character, character.xPosition, newPosition)) {
+                        character.yPosition = newPosition;
+                        this.updateImage();
+                    }
                 } else {
                     this.say(character, character.tooLowPhrase);
                 }
@@ -169,15 +204,18 @@ IN THE SOFTWARE.
             moveUp: function (character) {
                 const newPosition = character.yPosition - 20;
                 if (newPosition > 0) {
-                    character.yPosition = newPosition;
-                    this.updateImage();
+                    // Check for collision before moving
+                    if (!this.checkCollision(character, character.xPosition, newPosition)) {
+                        character.yPosition = newPosition;
+                        this.updateImage();
+                    }
                 } else {
                     this.say(character, character.tooHighPhrase);
                 }
             },
 
             tapCharacter: function (mouseEvent) {
-                let selectedCharacters = Object.values(this.characters).filter(character => {
+                const selectedCharacters = Object.values(this.characters).filter(character => {
                     return this.tapped(character, mouseEvent);
                 });
                 if (selectedCharacters.length > 0) {
@@ -206,6 +244,16 @@ IN THE SOFTWARE.
             updateImage: function () {
                 this.canvasContext.clearRect(0, 0, this.canvas.width,
                     this.canvas.height);
+
+                // Draw background if showBackground is true
+                this.canvas.style.opacity = this.showBackground ? '1' : '0.05';
+                if (this.showBackground && this.backgroundImage) {
+                    this.canvasContext.drawImage(this.backgroundImage,
+                        0, 0,
+                        this.canvas.width, this.canvas.height);
+                }
+
+                // Draw characters
                 for (let name in this.characters) {
                     const character = this.characters[name];
                     this.canvasContext.drawImage(character.image,
@@ -222,7 +270,109 @@ IN THE SOFTWARE.
                     return true;
                 }
                 return false;
+            },
+
+            checkCollision(character, newX, newY) {
+                // Get the other character to check collision with
+                const otherCharacter = character === this.characters.character1 ?
+                    this.characters.character2 : this.characters.character1;
+
+                // Check if the bounding boxes overlap
+                if (
+                    newX < otherCharacter.xPosition + otherCharacter.imageWidth &&
+                    newX + character.imageWidth > otherCharacter.xPosition &&
+                    newY < otherCharacter.yPosition + otherCharacter.imageHeight &&
+                    newY + character.imageHeight > otherCharacter.yPosition
+                ) {
+                    // Collision detected
+                    this.say(otherCharacter, "Hey, watch out!");
+                    return true;
+                }
+                return false;
+            },
+
+            takeSnapshotAndDescribe: async function () {
+                this.snapshotButton.textContent = "Processing...";
+                this.snapshotButton.disabled = true;
+
+                try {
+                    // Capture the canvas as a data URL
+                    const imageDataUrl = this.canvas.toDataURL('image/png');
+                    const description = await this.callOpenAI(imageDataUrl);
+
+                    // Use the first character to speak the description
+                    const character = this.characters.character1;
+                    this.say(character, description);
+                }
+                catch (error) {
+                    console.error('Error:', error);
+
+                    let errorMessage = "Sorry, I couldn't describe the scene. ";
+
+                    if (error.message.includes('Network')) {
+                        errorMessage += "There was a network error. Please check your internet connection.";
+                    } else if (error.message.includes('Authorization')) {
+                        errorMessage += "There was an issue with the API key. Please check your OpenAI API key.";
+                    } else {
+                        errorMessage += "An unexpected error occurred.";
+                    }
+
+                    this.say(this.characters.character1, errorMessage);
+                }
+                finally {
+                    this.$.snapshotButton.textContent = "Describe Scene";
+                    this.$.snapshotButton.disabled = false;
+                }
+            },
+
+            callOpenAI: async function (imageDataUrl) {
+
+                // Send to OpenAI API
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + this.getOpenAIKey(),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-4o",
+                        messages: [
+                            {
+                                role: "user",
+                                content: [
+                                    { type: "text", text: "Describe this image and the background." },
+                                    {
+                                        type: "image_url",
+                                        image_url: {
+                                            url: imageDataUrl
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        max_tokens: 300
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+
+                const data = await response.json();
+
+                // Extract the description from the response
+                return data.choices[0].message.content;
+            },
+
+            getOpenAIKey: function () {
+                let key = sessionStorage.getItem('open-ai-key');
+                if (!key) {
+                    key = prompt("Please enter your OpenAI API key:", "");
+                    sessionStorage.setItem('open-ai-key', key);
+                }
+                return key;
             }
         })
     </script>
 </dom-module>
+

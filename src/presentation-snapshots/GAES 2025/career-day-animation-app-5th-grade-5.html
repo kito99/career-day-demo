@@ -1,0 +1,378 @@
+/*
+Copyright 2018-2025 Kito D. Mann
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
+*/
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<script type="application/javascript" src="key.min.js"></script>
+
+<dom-module id="career-day-animation-app">
+
+    <!-- What language is this? -->
+    <template>
+        <style>
+            /**  What language is this? **/
+            .playground {
+                transition: opacity 2s ease-in;
+                opacity: 5%;
+            }
+
+            button {
+                margin-top: 10px;
+                padding: 8px 16px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+        </style>
+        <canvas id="canvas" width="1024px" height="768px" class="playground"></canvas>
+        <audio id="audioPlayer">
+            <source id="sound">
+        </audio>
+        <div>Press [SPACE] to toggle the background. Use the arrow keys and W,A,S, and D to move the characters.</div>
+        <button id="snapshotButton">Describe Scene</button>
+    </template>
+
+    <script>
+        <!-- What language is this? -->
+        Polymer({
+
+            is: 'career-day-animation-app',
+
+            // Step 2:(product owner): Pick out characters and what they say
+            // Step 3 (designer): change size of characters and pitch/rate of characters
+
+            characters: {
+                character1: {
+                    image: new Image(),
+                    xPosition: 0,
+                    yPosition: 0,
+                    imageHeight: 150,
+                    imageWidth: 150,
+                    pitch: 2, // 0-2
+                    rate: 1, // 0.1 - 10
+                    imagePath: '/images/characters/rat-dancing-meme.gif',
+                    soundPath: '/sounds/chipmunk-laugh.mp3',
+                    soundType: 'audio/mp3',
+                    tooHighPhrase: "Too high",
+                    tooLowPhrase: "To low!",
+                    tooFarRightPhrase: 'Too far right!',
+                    tooFarLeftPhrase: 'Too far left!'
+                },
+                character2: {
+                    image: new Image(),
+                    xPosition: 0,
+                    yPosition: 210,
+                    imageHeight: 150,
+                    imageWidth: 150,
+                    pitch: 1, // 0-2
+                    rate: 1, // 0.1 - 10
+                    imagePath: '/images/characters/Tung Tung Tung Sahur.webp',
+                    soundPath: '/sounds/large-bubble.mp3',
+                    soundType: 'audio/mp3',
+                    tooHighPhrase: "Too high",
+                    tooLowPhrase: "To low!",
+                    tooFarRightPhrase: 'Too far right!',
+                    tooFarLeftPhrase: 'Too far left!'
+                }
+            },
+
+            ready: function () {
+                this.audioPlayer = this.$.audioPlayer;
+
+                this.canvas = this.$.canvas;
+                this.canvas.style.opacity = '0.05';
+                this.canvasContext = this.canvas.getContext('2d');
+                this.snapshotButton = this.$.snapshotButton;
+
+                // Initialize background image
+                this.backgroundImage = new Image();
+                this.backgroundImage.src = '/images/backgrounds/fuzzy-big-mouth.jpg'; // Step 1 (designer): pick background image
+                this.showBackground = true;
+                this.backgroundImage.onload = () => {
+                    this.updateImage();
+                };
+
+                this.setupCharacters(); // Step 2 (product owner)
+
+                // Add event listener for the snapshot button
+                this.snapshotButton.addEventListener('click', this.takeSnapshotAndDescribe.bind(this));
+            },
+
+            setupCharacters() {
+                const character1 = this.characters.character1;
+                const character2 = this.characters.character2;
+
+                character1.image.src = character1.imagePath;
+                character1.image.onload = () => {
+                    this.updateImage();
+                };
+
+                character2.image.src = character2.imagePath;
+                character2.image.onload = () => {
+                    this.updateImage();
+                };
+
+                this.canvas.addEventListener('click', this.tapCharacter.bind(this));
+                window.addEventListener('keydown', this.pressKey.bind(this));
+            },
+
+            pressKey: function (event) {
+                switch (event.keyCode) {
+                    case KeyJS.SPACEBAR:
+                        this.showBackground = !this.showBackground;
+                        this.updateImage();
+                        break;
+                    case KeyJS.RIGHT:
+                        this.moveRight(this.characters.character1);
+                        break;
+                    case KeyJS.LEFT:
+                        this.moveLeft(this.characters.character1);
+                        break;
+                    case KeyJS.DOWN:
+                        this.moveDown(this.characters.character1);
+                        break;
+                    case KeyJS.UP:
+                        this.moveUp(this.characters.character1);
+                        break;
+                    case KeyJS.D:
+                        this.moveRight(this.characters.character2);
+                        break;
+                    case KeyJS.A:
+                        this.moveLeft(this.characters.character2);
+                        break;
+                    case KeyJS.S:
+                        this.moveDown(this.characters.character2);
+                        break;
+                    case KeyJS.W:
+                        this.moveUp(this.characters.character2);
+                        break;
+                }
+            },
+
+            moveRight: function (character) {
+                const newPosition = character.xPosition + 20;
+                if (newPosition < this.canvas.width - character.imageWidth) {
+                    // Check for collision before moving
+                    if (!this.checkCollision(character, newPosition, character.yPosition)) {
+                        character.xPosition = newPosition;
+                        this.updateImage();
+                    }
+                } else {
+                    this.say(character, character.tooFarRightPhrase);
+                }
+            },
+
+            moveLeft: function (character) {
+                const newPosition = character.xPosition - 20;
+                if (newPosition > 0) {
+                    // Check for collision before moving
+                    if (!this.checkCollision(character, newPosition, character.yPosition)) {
+                        character.xPosition = newPosition;
+                        this.updateImage();
+                    }
+                } else {
+                    this.say(character, character.tooFarLeftPhrase);
+                }
+            },
+
+            moveDown: function (character) {
+                const newPosition = character.yPosition + 20;
+                if (newPosition < (this.canvas.height - character.imageHeight)) {
+                    // Check for collision before moving
+                    if (!this.checkCollision(character, character.xPosition, newPosition)) {
+                        character.yPosition = newPosition;
+                        this.updateImage();
+                    }
+                } else {
+                    this.say(character, character.tooLowPhrase);
+                }
+            },
+
+            moveUp: function (character) {
+                const newPosition = character.yPosition - 20;
+                if (newPosition > 0) {
+                    // Check for collision before moving
+                    if (!this.checkCollision(character, character.xPosition, newPosition)) {
+                        character.yPosition = newPosition;
+                        this.updateImage();
+                    }
+                } else {
+                    this.say(character, character.tooHighPhrase);
+                }
+            },
+
+            tapCharacter: function (mouseEvent) {
+                const selectedCharacters = Object.values(this.characters).filter(character => {
+                    return this.tapped(character, mouseEvent);
+                });
+                if (selectedCharacters.length > 0) {
+                    this.playSound(selectedCharacters[0]);
+                }
+            },
+
+            say: function (character, message) {
+                const utterance = new SpeechSynthesisUtterance(message);
+                utterance.pitch = character.pitch;
+                utterance.rate = character.rate;
+                this.debounce("say", () => {
+                    window.speechSynthesis.speak(utterance);
+                }, 500);
+            },
+
+            playSound: function (selectedCharacter) {
+                if (selectedCharacter.soundPath) {
+                    this.audioPlayer.querySelector('#sound').src = selectedCharacter.soundPath;
+                    this.audioPlayer.querySelector('#sound').setAttribute('type', selectedCharacter.soundType);
+                    this.audioPlayer.load();
+                    this.audioPlayer.play();
+                }
+            },
+
+            updateImage: function () {
+                this.canvasContext.clearRect(0, 0, this.canvas.width,
+                    this.canvas.height);
+
+                // Draw background if showBackground is true
+                this.canvas.style.opacity = this.showBackground ? '1' : '0.05';
+                if (this.showBackground && this.backgroundImage) {
+                    this.canvasContext.drawImage(this.backgroundImage,
+                        0, 0,
+                        this.canvas.width, this.canvas.height);
+                }
+
+                // Draw characters
+                for (let name in this.characters) {
+                    const character = this.characters[name];
+                    this.canvasContext.drawImage(character.image,
+                        character.xPosition,
+                        character.yPosition,
+                        character.imageWidth,
+                        character.imageHeight);
+                }
+            },
+
+            tapped(character, mouseEvent) {
+                if ((mouseEvent.clientX > character.xPosition && mouseEvent.clientX < character.xPosition + character.imageWidth) &&
+                    (mouseEvent.clientY > character.yPosition && mouseEvent.clientY < character.yPosition + character.imageHeight)) {
+                    return true;
+                }
+                return false;
+            },
+
+            checkCollision(character, newX, newY) {
+                // Get the other character to check collision with
+                const otherCharacter = character === this.characters.character1 ?
+                    this.characters.character2 : this.characters.character1;
+
+                // Check if the bounding boxes overlap
+                if (
+                    newX < otherCharacter.xPosition + otherCharacter.imageWidth &&
+                    newX + character.imageWidth > otherCharacter.xPosition &&
+                    newY < otherCharacter.yPosition + otherCharacter.imageHeight &&
+                    newY + character.imageHeight > otherCharacter.yPosition
+                ) {
+                    // Collision detected
+                    this.say(otherCharacter, "Hey, watch out!");
+                    return true;
+                }
+                return false;
+            },
+
+            takeSnapshotAndDescribe: async function () {
+                this.snapshotButton.textContent = "Processing...";
+                this.snapshotButton.disabled = true;
+
+                try {
+                    // Capture the canvas as a data URL
+                    const imageDataUrl = this.canvas.toDataURL('image/png');
+                    const description = await this.callOpenAI(imageDataUrl);
+
+                    // Use the first character to speak the description
+                    const character = this.characters.character1;
+                    this.say(character, description);
+                }
+                catch (error) {
+                    console.error('Error:', error);
+
+                    let errorMessage = "Sorry, I couldn't describe the scene. ";
+
+                    if (error.message.includes('Network')) {
+                        errorMessage += "There was a network error. Please check your internet connection.";
+                    } else if (error.message.includes('Authorization')) {
+                        errorMessage += "There was an issue with the API key. Please check your OpenAI API key.";
+                    } else {
+                        errorMessage += "An unexpected error occurred.";
+                    }
+
+                    this.say(this.characters.character1, errorMessage);
+                }
+                finally {
+                    this.$.snapshotButton.textContent = "Describe Scene";
+                    this.$.snapshotButton.disabled = false;
+                }
+            },
+
+            callOpenAI: async function (imageDataUrl) {
+
+                // Send to OpenAI API
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + this.getOpenAIKey(),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: "gpt-4o",
+                        messages: [
+                            {
+                                role: "user",
+                                content: [
+                                    { type: "text", text: "Describe this image and the background." },
+                                    {
+                                        type: "image_url",
+                                        image_url: {
+                                            url: imageDataUrl
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        max_tokens: 300
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+
+                const data = await response.json();
+
+                // Extract the description from the response
+                return data.choices[0].message.content;
+            },
+
+            getOpenAIKey: function () {
+                let key = sessionStorage.getItem('open-ai-key');
+                if (!key) {
+                    key = prompt("Please enter your OpenAI API key:", "");
+                    sessionStorage.setItem('open-ai-key', key);
+                }
+                return key;
+            }
+        })
+    </script>
+</dom-module>
+

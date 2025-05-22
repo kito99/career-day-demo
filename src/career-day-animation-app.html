@@ -21,9 +21,20 @@ IN THE SOFTWARE.
     <!-- What language is this? -->
     <template>
         <style>
+            /**  What language is this? **/
             .playground {
                 transition: opacity 2s ease-in;
                 opacity: 5%;
+            }
+
+            button {
+                margin-top: 10px;
+                padding: 8px 16px;
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
             }
         </style>
         <canvas id="canvas" width="1024px" height="768px" class="playground"></canvas>
@@ -31,7 +42,7 @@ IN THE SOFTWARE.
             <source id="sound">
         </audio>
         <div>Press [SPACE] to toggle the background. Use the arrow keys and W,A,S, and D to move the characters.</div>
-        <button id="snapshotButton" style="margin-top: 10px; padding: 8px 16px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Describe Scene</button>
+        <button id="snapshotButton">Describe Scene</button>
     </template>
 
     <script>
@@ -39,6 +50,9 @@ IN THE SOFTWARE.
         Polymer({
 
             is: 'career-day-animation-app',
+
+            // Step 2:(product owner): Pick out characters and what they say
+            // Step 3 (designer): change size of characters and pitch/rate of characters
 
             characters: {
                 character1: {
@@ -49,7 +63,7 @@ IN THE SOFTWARE.
                     imageWidth: 150,
                     pitch: 2, // 0-2
                     rate: 1, // 0.1 - 10
-                    imagePath: '/images/characters/happy-robot.png', // Step 2
+                    imagePath: '/images/characters/rat-dancing-meme.gif',
                     soundPath: '/sounds/chipmunk-laugh.mp3',
                     soundType: 'audio/mp3',
                     tooHighPhrase: "Too high",
@@ -65,7 +79,7 @@ IN THE SOFTWARE.
                     imageWidth: 150,
                     pitch: 1, // 0-2
                     rate: 1, // 0.1 - 10
-                    imagePath: '/images/characters/bad-kitty.png', // Step 3
+                    imagePath: '/images/characters/Tung Tung Tung Sahur.webp',
                     soundPath: '/sounds/large-bubble.mp3',
                     soundType: 'audio/mp3',
                     tooHighPhrase: "Too high",
@@ -85,13 +99,13 @@ IN THE SOFTWARE.
 
                 // Initialize background image
                 this.backgroundImage = new Image();
-                this.backgroundImage.src = '/images/backgrounds/stars.jpg'; // Step 1
+                this.backgroundImage.src = '/images/backgrounds/fuzzy-big-mouth.jpg'; // Step 1 (designer): pick background image
                 this.showBackground = true;
                 this.backgroundImage.onload = () => {
                     this.updateImage();
                 };
 
-                this.setupCharacters();
+                this.setupCharacters(); // Step 2 (product owner)
 
                 // Add event listener for the snapshot button
                 this.snapshotButton.addEventListener('click', this.takeSnapshotAndDescribe.bind(this));
@@ -311,7 +325,7 @@ IN THE SOFTWARE.
                 }
             },
 
-            callOpenAI: async function(imageDataUrl) {
+            callOpenAI: async function (imageDataUrl) {
 
                 // Send to OpenAI API
                 const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -350,7 +364,7 @@ IN THE SOFTWARE.
                 return data.choices[0].message.content;
             },
 
-            getOpenAIKey: function() {
+            getOpenAIKey: function () {
                 let key = sessionStorage.getItem('open-ai-key');
                 if (!key) {
                     key = prompt("Please enter your OpenAI API key:", "");
@@ -361,3 +375,4 @@ IN THE SOFTWARE.
         })
     </script>
 </dom-module>
+
