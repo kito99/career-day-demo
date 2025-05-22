@@ -17,17 +17,13 @@ IN THE SOFTWARE.
 <script type="application/javascript" src="key.min.js"></script>
 
 <dom-module id="career-day-animation-app">
+
+    <!-- What language is this? -->
     <template>
         <style>
             .playground {
                 transition: opacity 2s ease-in;
                 opacity: 5%;
-            }
-            .background {
-                background: url('/images/backgrounds/books-on-table.jpg'); /* Step 1.*/
-                background-size: cover;
-                background-position: center;
-                opacity: 100%;
             }
         </style>
         <canvas id="canvas" width="1024px" height="768px" class="playground"></canvas>
@@ -39,6 +35,7 @@ IN THE SOFTWARE.
     </template>
 
     <script>
+        <!-- What language is this? -->
         Polymer({
 
             is: 'career-day-animation-app',
@@ -82,9 +79,17 @@ IN THE SOFTWARE.
                 this.audioPlayer = this.$.audioPlayer;
 
                 this.canvas = this.$.canvas;
+                this.canvas.style.opacity = '0.05';
                 this.canvasContext = this.canvas.getContext('2d');
-                this.snapshotButton = this.$.snapshotButton.
-                this.openAIKey = null;
+                this.snapshotButton = this.$.snapshotButton;
+
+                // Initialize background image
+                this.backgroundImage = new Image();
+                this.backgroundImage.src = '/images/backgrounds/stars.jpg'; // Step 1
+                this.showBackground = true;
+                this.backgroundImage.onload = () => {
+                    this.updateImage();
+                };
 
                 this.setupCharacters();
 
@@ -113,7 +118,8 @@ IN THE SOFTWARE.
             pressKey: function (event) {
                 switch (event.keyCode) {
                     case KeyJS.SPACEBAR:
-                        this.canvas.classList.toggle('background');
+                        this.showBackground = !this.showBackground;
+                        this.updateImage();
                         break;
                     case KeyJS.RIGHT:
                         this.moveRight(this.characters.character1);
@@ -224,6 +230,16 @@ IN THE SOFTWARE.
             updateImage: function () {
                 this.canvasContext.clearRect(0, 0, this.canvas.width,
                     this.canvas.height);
+
+                // Draw background if showBackground is true
+                this.canvas.style.opacity = this.showBackground ? '1' : '0.05';
+                if (this.showBackground && this.backgroundImage) {
+                    this.canvasContext.drawImage(this.backgroundImage,
+                        0, 0,
+                        this.canvas.width, this.canvas.height);
+                }
+
+                // Draw characters
                 for (let name in this.characters) {
                     const character = this.characters[name];
                     this.canvasContext.drawImage(character.image,
@@ -262,7 +278,6 @@ IN THE SOFTWARE.
             },
 
             takeSnapshotAndDescribe: async function () {
-                // Change button text to indicate processing
                 this.snapshotButton.textContent = "Processing...";
                 this.snapshotButton.disabled = true;
 
@@ -278,7 +293,6 @@ IN THE SOFTWARE.
                 catch (error) {
                     console.error('Error:', error);
 
-                    // Provide more specific error messages
                     let errorMessage = "Sorry, I couldn't describe the scene. ";
 
                     if (error.message.includes('Network')) {
@@ -292,7 +306,6 @@ IN THE SOFTWARE.
                     this.say(this.characters.character1, errorMessage);
                 }
                 finally {
-                    // Reset button
                     this.$.snapshotButton.textContent = "Describe Scene";
                     this.$.snapshotButton.disabled = false;
                 }
@@ -338,10 +351,12 @@ IN THE SOFTWARE.
             },
 
             getOpenAIKey: function() {
-                if (!this.openAIKey) {
-                    this.openAIKey = prompt("Please enter your OpenAI API key:", "");
+                let key = sessionStorage.getItem('open-ai-key');
+                if (!key) {
+                    key = prompt("Please enter your OpenAI API key:", "");
+                    sessionStorage.setItem('open-ai-key', key);
                 }
-                return this.openAIKey;
+                return key;
             }
         })
     </script>
